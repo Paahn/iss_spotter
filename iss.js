@@ -14,8 +14,22 @@ const fetchMyIP = (callback) => {
   });
 };
 
-const fetchCoordsByIP = () => {
-
+const fetchCoordsByIP = (ip, callback) => {
+  request('https://ipvigilante.com/8.8.8.8', (error, response, body) => {
+  if (error){
+    return callback(error, null);
+  }
+  if (response.statusCode !== 200) {
+    callback(Error(`Status Code ${response.statusCode} when fetching coordinates: ${body}`), null);
+  }
+  const lat = JSON.parse(body).data['latitude'];
+  const lng = JSON.parse(body).data['longitude'];
+  const obj = { lat, lng }
+  callback(null, obj); 
+  });
 };
 
-module.exports = { fetchMyIP };
+module.exports = { 
+  fetchMyIP,
+  fetchCoordsByIP
+};
